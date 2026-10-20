@@ -6,6 +6,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -15,10 +16,12 @@ fun BottomNavBar(
     navController: NavHostController,
     items: List<BottomNavItem>
 ) {
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentDestination = navBackStackEntry?.destination
+    NavigationBar(
+        contentColor = Color.Black
+    ) {
+        val navBackStackEntry by navController.currentBackStackEntryAsState()
+        val currentDestination = navBackStackEntry?.destination
 
-    NavigationBar {
         items.forEach { item ->
             NavigationBarItem(
                 icon = {
@@ -33,14 +36,22 @@ fun BottomNavBar(
                         fontSize = 12.sp
                     )
                 },
-                selected = currentDestination?.route == item.route::class.qualifiedName,
+                alwaysShowLabel = true,
+                selected = currentDestination?.route ==
+                        item.route::class.qualifiedName,
                 onClick = {
                     navController.navigate(item.route) {
+                        // Volta a pilha de navegação até a HomePage.
+                        popUpTo(navController.graph.startDestinationId) {
+                            saveState = true
+                        }
+
+                        restoreState = true
                         launchSingleTop = true
                     }
-                },
-                alwaysShowLabel = true
+                }
             )
         }
     }
 }
+
