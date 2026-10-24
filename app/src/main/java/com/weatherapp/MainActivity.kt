@@ -28,6 +28,13 @@ import com.weatherapp.ui.nav.BottomNavBar
 import com.weatherapp.ui.nav.BottomNavItem
 import com.weatherapp.ui.nav.MainNavHost
 import com.weatherapp.viewmodel.MainViewModel
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.NavDestination.Companion.hasRoute
+import com.weatherapp.ui.nav.Route
 
 class MainActivity : ComponentActivity() {
 
@@ -38,6 +45,16 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val navController = rememberNavController()
+            val currentRoute = navController.currentBackStackEntryAsState()
+
+            val showButton =
+                currentRoute.value?.destination?.hasRoute(Route.List::class) == true
+
+            val launcher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.RequestPermission(),
+                onResult = {}
+            )
+
             var showDialog by remember {
                 mutableStateOf(false)
             }
@@ -87,21 +104,23 @@ class MainActivity : ComponentActivity() {
                         )
                     },
                     floatingActionButton = {
-                        FloatingActionButton(
-                            onClick = {
-                                showDialog = true
+                        if (showButton) {
+                            FloatingActionButton(onClick = { showDialog = true }) {
+                                Icon(
+                                    imageVector = Icons.Default.Add,
+                                    contentDescription = "Adicionar"
+                                )
                             }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Add,
-                                contentDescription = "Adicionar"
-                            )
                         }
                     }
                 ) { innerPadding ->
                     Box(
                         modifier = Modifier.padding(innerPadding)
                     ) {
+                        launcher.launch(
+                            android.Manifest.permission.ACCESS_FINE_LOCATION
+                        )
+
                         MainNavHost(
                             navController = navController,
                             viewModel = viewModel
