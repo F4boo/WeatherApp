@@ -35,6 +35,8 @@ import androidx.compose.runtime.setValue
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.NavDestination.Companion.hasRoute
 import com.weatherapp.ui.nav.Route
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 
 class MainActivity : ComponentActivity() {
 
@@ -81,7 +83,9 @@ class MainActivity : ComponentActivity() {
                             },
                             actions = {
                                 IconButton(
-                                    onClick = { finish() }
+                                    onClick = {
+                                        Firebase.auth.signOut()
+                                    }
                                 ) {
                                     Icon(
                                         imageVector = Icons.AutoMirrored.Filled.ExitToApp,

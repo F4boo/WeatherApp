@@ -29,6 +29,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.weatherapp.theme.WeatherAppTheme
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 
 class RegisterActivity : ComponentActivity() {
 
@@ -150,21 +152,22 @@ fun RegisterPage() {
 
             Button(
                 onClick = {
-
-                    Toast.makeText(
-                        activity,
-                        "Cadastro realizado!",
-                        Toast.LENGTH_LONG
-                    ).show()
-
-                    activity.startActivity(
-                        Intent(
-                            activity,
-                            LoginActivity::class.java
-                        )
-                    )
-
-                    activity.finish()
+                    Firebase.auth.createUserWithEmailAndPassword(email, password)
+                        .addOnCompleteListener(activity) { task ->
+                            if (task.isSuccessful) {
+                                Toast.makeText(
+                                    activity,
+                                    "Registro OK!",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            } else {
+                                Toast.makeText(
+                                    activity,
+                                    "Registro FALHOU!",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
+                        }
                 },
                 enabled =
                     name.isNotEmpty() &&
