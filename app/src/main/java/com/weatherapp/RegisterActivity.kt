@@ -1,7 +1,7 @@
+
 package com.weatherapp
 
 import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -28,9 +28,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.weatherapp.theme.WeatherAppTheme
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
+import com.weatherapp.db.fb.FBDatabase
+import com.weatherapp.model.User
+import com.weatherapp.db.fb.toFBUser
+import com.weatherapp.theme.WeatherAppTheme
 
 class RegisterActivity : ComponentActivity() {
 
@@ -155,11 +158,17 @@ fun RegisterPage() {
                     Firebase.auth.createUserWithEmailAndPassword(email, password)
                         .addOnCompleteListener(activity) { task ->
                             if (task.isSuccessful) {
+
+                                FBDatabase().register(
+                                    User(name, email).toFBUser()
+                                )
+
                                 Toast.makeText(
                                     activity,
                                     "Registro OK!",
                                     Toast.LENGTH_LONG
                                 ).show()
+
                             } else {
                                 Toast.makeText(
                                     activity,
@@ -181,12 +190,10 @@ fun RegisterPage() {
 
             Button(
                 onClick = {
-
                     name = ""
                     email = ""
                     password = ""
                     repeatPassword = ""
-
                 }
             ) {
                 Text("Limpar")
